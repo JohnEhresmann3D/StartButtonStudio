@@ -408,7 +408,7 @@ Change `PORT = 8787` near the top of `server.py` to any unused port (e.g. `8788`
 
 ## License
 
-Copyright 2026 Start Button
+Copyright 2026 Timetravelin Entertainment
 
 Licensed under the [Apache License, Version 2.0](LICENSE). You may use, copy, modify,
 and distribute this software freely under the terms of that license. See the `LICENSE`
