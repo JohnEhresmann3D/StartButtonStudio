@@ -1,0 +1,1163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Start Button · Episode Generator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0b1018;
+    --panel: #111a28;
+    --panel-2: #0e1622;
+    --line: #22324a;
+    --ink: #e7eef8;
+    --dim: #8da3bf;
+    --blue: #2a7fc9;
+    --blue-deep: #1a5fa0;
+    --indigo: #4a5fc9;
+    --onair: #e0455a;
+    --ok: #46c98a;
+    --radius: 10px;
+    --display: "Chakra Petch", "Trebuchet MS", sans-serif;
+    --body: "IBM Plex Sans", -apple-system, Segoe UI, sans-serif;
+    --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { background: var(--bg); color: var(--ink); font-family: var(--body); }
+  body { min-height: 100vh; padding: 2rem 1.25rem 4rem; }
+
+  .wrap { max-width: 1080px; margin: 0 auto; }
+
+  /* ── Masthead ── */
+  .masthead { display: flex; align-items: baseline; gap: 1rem; flex-wrap: wrap; margin-bottom: 1.75rem; }
+  .masthead h1 {
+    font-family: var(--display); font-weight: 700; font-size: 1.7rem;
+    letter-spacing: 0.04em; text-transform: uppercase;
+  }
+  .masthead h1 span { color: var(--blue); }
+  .masthead .role {
+    font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.18em;
+    text-transform: uppercase; color: var(--dim);
+    border: 1px solid var(--line); border-radius: 999px; padding: 0.3rem 0.75rem;
+  }
+  .onair { display: inline-flex; align-items: center; gap: 0.45rem; margin-left: auto;
+    font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.18em; color: var(--dim); }
+  .onair i { width: 8px; height: 8px; border-radius: 50%; background: var(--onair);
+    box-shadow: 0 0 8px var(--onair); animation: blink 2.4s infinite; }
+  @keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: 0.25; } }
+  @media (prefers-reduced-motion: reduce) { .onair i { animation: none; } }
+
+  /* ── Grid ── */
+  .grid { display: grid; grid-template-columns: 1fr 320px; gap: 1.25rem; align-items: start; }
+  @media (max-width: 880px) { .grid { grid-template-columns: 1fr; } }
+
+  .card {
+    background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius);
+    padding: 1.4rem;
+  }
+  .card + .card { margin-top: 1.25rem; }
+  .card-label {
+    font-family: var(--mono); font-size: 0.68rem; letter-spacing: 0.22em;
+    text-transform: uppercase; color: var(--blue); margin-bottom: 1rem;
+  }
+
+  /* ── Topic Scout ── */
+  .scout-bar { display: flex; gap: 0.6rem; }
+  .scout-bar input { flex: 1; }
+  .scout-btn {
+    background: var(--panel-2); border: 1px solid var(--blue); color: var(--ink);
+    font-family: var(--mono); font-size: 0.78rem; letter-spacing: 0.1em; text-transform: uppercase;
+    padding: 0 1rem; border-radius: 7px; cursor: pointer; white-space: nowrap;
+  }
+  .scout-btn:hover { background: rgba(42,127,201,0.15); }
+  .scout-btn:disabled { opacity: 0.5; cursor: wait; }
+  .scout-results { margin-top: 1rem; display: none; }
+  .scout-results.show { display: block; }
+  .suggestion {
+    border: 1px solid var(--line); border-radius: 8px; background: var(--panel-2);
+    padding: 0.95rem 1rem; margin-top: 0.7rem;
+  }
+  .suggestion h3 { font-family: var(--display); font-size: 0.98rem; font-weight: 600; letter-spacing: 0.02em; }
+  .suggestion .angle { font-size: 0.86rem; color: var(--ink); margin-top: 0.4rem; line-height: 1.55; }
+  .suggestion .why { font-size: 0.78rem; color: var(--dim); font-style: italic; margin-top: 0.35rem; }
+  .suggestion .srcs { margin-top: 0.5rem; font-size: 0.74rem; }
+  .suggestion .srcs a { color: var(--blue); text-decoration: none; margin-right: 0.8rem; }
+  .suggestion .srcs a:hover { text-decoration: underline; }
+  .sug-actions { display: flex; align-items: center; gap: 0.45rem; margin-top: 0.7rem; }
+  .sug-actions .to-label { font-family: var(--mono); font-size: 0.66rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--dim); }
+  .sug-actions button {
+    background: transparent; border: 1px solid var(--line); color: var(--ink);
+    font-family: var(--mono); font-size: 0.72rem; padding: 0.32rem 0.7rem;
+    border-radius: 6px; cursor: pointer;
+  }
+  .sug-actions button:hover { border-color: var(--blue); background: rgba(42,127,201,0.12); }
+  .sug-actions button.placed { border-color: var(--ok); color: var(--ok); }
+
+  label.f {
+    display: block; font-size: 0.78rem; font-weight: 600; color: var(--dim);
+    letter-spacing: 0.04em; margin: 0.9rem 0 0.35rem;
+  }
+  label.f:first-of-type { margin-top: 0; }
+  input[type="text"], input[type="date"], input[type="password"], textarea, select {
+    width: 100%; background: var(--panel-2); border: 1px solid var(--line);
+    border-radius: 7px; color: var(--ink); font-family: var(--body);
+    font-size: 0.92rem; padding: 0.6rem 0.7rem; outline: none;
+  }
+  input:focus, textarea:focus, select:focus { border-color: var(--blue); box-shadow: 0 0 0 2px rgba(42,127,201,0.25); }
+  textarea { resize: vertical; min-height: 64px; }
+  .hint { font-size: 0.74rem; color: var(--dim); margin-top: 0.35rem; line-height: 1.45; }
+
+  .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0.9rem; }
+  @media (max-width: 560px) { .row2 { grid-template-columns: 1fr; } }
+
+  /* Topic cards */
+  .topic {
+    border: 1px solid var(--line); border-left: 3px solid var(--blue);
+    border-radius: 8px; background: var(--panel-2); padding: 1rem; margin-top: 1rem;
+  }
+  .topic:nth-of-type(2) { border-left-color: var(--blue-deep); }
+  .topic:nth-of-type(3) { border-left-color: var(--indigo); }
+  .topic .t-head {
+    font-family: var(--mono); font-size: 0.66rem; letter-spacing: 0.2em;
+    text-transform: uppercase; color: var(--dim); margin-bottom: 0.6rem;
+  }
+
+  /* ── Console column ── */
+  .console .card-label { color: var(--dim); }
+  .seg-toggle { display: flex; gap: 0.4rem; }
+  .seg-toggle button {
+    flex: 1; background: var(--panel-2); border: 1px solid var(--line); color: var(--dim);
+    font-family: var(--mono); font-size: 0.7rem; letter-spacing: 0.08em; padding: 0.5rem 0.2rem;
+    border-radius: 7px; cursor: pointer;
+  }
+  .seg-toggle button.on { border-color: var(--blue); color: var(--ink); background: rgba(42,127,201,0.12); }
+
+  /* THE START BUTTON — signature element */
+  .startkey {
+    margin-top: 1.25rem; width: 100%; border: none; cursor: pointer;
+    font-family: var(--display); font-weight: 700; font-size: 1.25rem;
+    letter-spacing: 0.22em; text-transform: uppercase; color: #fff;
+    padding: 1.05rem 1rem 1.15rem; border-radius: 12px;
+    background: linear-gradient(180deg, #3b8de0 0%, #1a5fa0 100%);
+    border-top: 1px solid rgba(255,255,255,0.45);
+    box-shadow: 0 5px 0 #123f6b, 0 10px 28px rgba(42,127,201,0.35);
+    transition: transform 0.06s ease, box-shadow 0.06s ease, filter 0.2s;
+  }
+  .startkey:hover { filter: brightness(1.07); }
+  .startkey:active { transform: translateY(4px); box-shadow: 0 1px 0 #123f6b, 0 4px 14px rgba(42,127,201,0.3); }
+  .startkey:disabled { filter: grayscale(0.5) brightness(0.7); cursor: wait; transform: none; }
+  .startkey .press {
+    display: block; font-family: var(--mono); font-weight: 400; font-size: 0.62rem;
+    letter-spacing: 0.3em; margin-top: 0.3rem; opacity: 0.85; animation: presspulse 1.8s infinite;
+  }
+  @keyframes presspulse { 0%,100% { opacity: 0.85; } 50% { opacity: 0.3; } }
+  @media (prefers-reduced-motion: reduce) { .startkey .press { animation: none; } }
+
+  .packetkey {
+    margin-top: 0.7rem; width: 100%; cursor: pointer;
+    background: rgba(201,146,10,0.1); border: 1px solid #c9920a; color: #f5c842;
+    font-family: var(--mono); font-size: 0.78rem; letter-spacing: 0.12em; text-transform: uppercase;
+    padding: 0.7rem 0.5rem; border-radius: 9px;
+  }
+  .packetkey:hover { background: rgba(201,146,10,0.2); }
+  .packetkey:disabled { opacity: 0.5; cursor: wait; }
+
+  .status {
+    margin-top: 0.9rem; font-family: var(--mono); font-size: 0.74rem; line-height: 1.6;
+    color: var(--dim); min-height: 1.2em; white-space: pre-wrap;
+  }
+  .status.err { color: #f08a99; }
+  .status.ok { color: var(--ok); }
+
+  .tokenline { display: flex; align-items: center; gap: 0.5rem; margin-top: 0.4rem; }
+  .tokenstate { font-family: var(--mono); font-size: 0.72rem; }
+  .tokenstate.good { color: var(--ok); }
+
+  /* ── Output flyout panel (slides in from the right, Claude-style) ── */
+  .wrap { transition: padding-right 0.32s cubic-bezier(0.4, 0, 0.2, 1); }
+  body.flyout-open .wrap { padding-right: calc(var(--flyout-w) + 1.25rem); }
+
+  .flyout {
+    position: fixed; top: 0; right: 0; z-index: 60;
+    width: var(--flyout-w); max-width: 92vw; height: 100vh;
+    background: var(--panel); border-left: 1px solid var(--line);
+    box-shadow: -18px 0 48px rgba(0,0,0,0.4);
+    display: flex; flex-direction: column;
+    transform: translateX(100%);
+    transition: transform 0.34s cubic-bezier(0.4, 0, 0.2, 1), width 0.28s ease;
+    will-change: transform;
+  }
+  .flyout.show { transform: translateX(0); }
+  :root { --flyout-w: 620px; }
+  .flyout.wide { --flyout-w: 60vw; }
+
+  .flyout-backdrop {
+    position: fixed; inset: 0; z-index: 55; background: rgba(0,0,0,0.5);
+    opacity: 0; pointer-events: none; transition: opacity 0.3s;
+  }
+  .flyout-backdrop.show { opacity: 1; pointer-events: auto; }
+
+  .flyout-titlebar {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0.85rem 1rem 0.85rem 1.25rem; border-bottom: 1px solid var(--line);
+    flex-shrink: 0;
+  }
+  .flyout-title { display: flex; align-items: center; gap: 0.55rem;
+    font-family: var(--mono); font-size: 0.78rem; letter-spacing: 0.12em;
+    text-transform: uppercase; color: var(--ink); }
+  .flyout-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--ok);
+    box-shadow: 0 0 8px var(--ok); }
+  .flyout-tools { display: flex; gap: 0.4rem; }
+  .flyout-iconbtn {
+    background: var(--panel-2); border: 1px solid var(--line); color: var(--ink);
+    width: 32px; height: 32px; border-radius: 7px; cursor: pointer;
+    font-size: 0.95rem; line-height: 1; display: flex; align-items: center; justify-content: center;
+  }
+  .flyout-iconbtn:hover { border-color: var(--blue); }
+
+  .flyout-body { flex: 1; overflow-y: auto; padding: 1.1rem 1.25rem; display: flex; flex-direction: column; }
+  .flyout-footer {
+    flex-shrink: 0; padding: 0.8rem 1.25rem; border-top: 1px solid var(--line);
+    margin-bottom: 0 !important;
+  }
+
+  .out-bar { display: flex; gap: 0.6rem; flex-wrap: wrap; }
+  .out-bar button {
+    background: var(--panel-2); border: 1px solid var(--line); color: var(--ink);
+    font-family: var(--mono); font-size: 0.74rem; letter-spacing: 0.08em;
+    padding: 0.55rem 0.9rem; border-radius: 7px; cursor: pointer;
+  }
+  .out-bar button:hover { border-color: var(--blue); }
+  .out-bar .primary { border-color: var(--blue); background: rgba(42,127,201,0.15); }
+
+  /* Reopen tab — visible when a preview exists but the panel is closed */
+  .reopen-tab {
+    position: fixed; right: 0; top: 50%; transform: translateY(-50%); z-index: 50;
+    display: none; background: var(--blue); color: #fff; border: none;
+    font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase;
+    padding: 0.7rem 0.6rem; border-radius: 9px 0 0 9px; cursor: pointer;
+    writing-mode: vertical-rl; box-shadow: -4px 0 14px rgba(0,0,0,0.3);
+  }
+  .reopen-tab.show { display: block; }
+  .reopen-tab:hover { filter: brightness(1.1); }
+
+  .qotd { margin-bottom: 1rem; display: none; }
+  .qotd.show { display: block; }
+  .qotd-head { display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+  .qotd-regen {
+    background: var(--panel-2); border: 1px solid var(--line); color: var(--ink);
+    font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.08em;
+    padding: 0.4rem 0.8rem; border-radius: 7px; cursor: pointer;
+  }
+  .qotd-regen:hover { border-color: var(--blue); }
+  .qotd-regen:disabled { opacity: 0.5; cursor: wait; }
+  .qotd-options { display: flex; flex-direction: column; gap: 0.55rem; }
+  .qotd-opt {
+    text-align: left; background: var(--panel-2); border: 1px solid var(--line);
+    border-left: 3px solid var(--line); color: var(--ink); font-family: var(--body);
+    font-size: 0.92rem; line-height: 1.5; padding: 0.8rem 1rem; border-radius: 8px;
+    cursor: pointer; transition: border-color 0.12s, background 0.12s;
+  }
+  .qotd-opt:hover { border-color: var(--blue); border-left-color: var(--blue); background: rgba(42,127,201,0.08); }
+  .qotd-opt.chosen { border-color: var(--ok); border-left-color: var(--ok); background: rgba(70,201,138,0.1); }
+  .qotd-opt .pick-tag { display: block; font-family: var(--mono); font-size: 0.64rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--dim); margin-bottom: 0.3rem; }
+  .qotd-opt.chosen .pick-tag { color: var(--ok); }
+
+  iframe.preview {
+    flex: 1; min-height: 420px; width: 100%;
+    border: 1px solid var(--line); border-radius: var(--radius); background: #fff;
+  }
+
+  /* On narrow screens the panel overlays instead of pushing content */
+  @media (max-width: 1100px) {
+    body.flyout-open .wrap { padding-right: 1.25rem; }
+    :root { --flyout-w: 560px; }
+  }
+
+  footer.app {
+    margin-top: 2.5rem; text-align: center; font-family: var(--mono);
+    font-size: 0.68rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--dim);
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="masthead">
+    <h1>Start <span>Button</span></h1>
+    <span class="role">Episode Generator · Producer Console</span>
+    <span class="onair"><i></i> Local · Nothing leaves your machine except the API call</span>
+  </div>
+
+  <div class="grid">
+    <!-- ── LEFT: rundown sheet ── -->
+    <div>
+      <div class="card">
+        <div class="card-label">Topic Scout</div>
+        <div class="scout-bar">
+          <input type="text" id="scoutBrief"
+                 placeholder="What are you in the mood for? e.g. optimistic stories, indie surprises, anything about Nintendo…">
+          <button class="scout-btn" id="scoutGo">📡 Scan</button>
+        </div>
+        <p class="hint">Pulls fresh headlines from IGN, Eurogamer, GameSpot, Polygon, PC Gamer & VGC, then suggests discussion topics that match your direction. Leave blank to get this week's most discussable stories.</p>
+        <div class="status" id="scoutStatus"></div>
+        <div class="scout-results" id="scoutResults"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-label">This Week's Episode</div>
+
+        <div class="row2">
+          <div>
+            <label class="f" for="theme">Episode theme / title</label>
+            <input type="text" id="theme" placeholder="e.g. This Is Our Year">
+          </div>
+          <div>
+            <label class="f" for="epdate">Air date</label>
+            <input type="date" id="epdate">
+          </div>
+        </div>
+
+        <label class="f" for="tone">Tone</label>
+        <select id="tone">
+          <option value="balanced">Balanced — even-handed discussion</option>
+          <option value="optimistic">Optimistic — celebratory, what's going right</option>
+          <option value="critical">Critical — hard questions, accountability</option>
+          <option value="nostalgic">Nostalgic — looking back, comparing eras</option>
+          <option value="playful">Playful — loose, fun, banter-forward</option>
+        </select>
+
+        <label class="f" for="icebreaker">Icebreaker question <span style="font-weight:400">(leave blank to let the AI write one)</span></label>
+        <input type="text" id="icebreaker" placeholder="e.g. What's your favorite game of the year so far?">
+      </div>
+
+      <div class="card">
+        <div class="card-label">Three Topics</div>
+
+        <div class="topic">
+          <div class="t-head">Segment 1</div>
+          <label class="f">Topic</label>
+          <input type="text" id="t1" placeholder="e.g. 007 First Light — can a new Bond game land?">
+          <label class="f">Angle / notes (optional)</label>
+          <textarea id="t1n" placeholder="What you want the discussion to dig into, facts to include, clips to mention…"></textarea>
+        </div>
+
+        <div class="topic">
+          <div class="t-head">Segment 2</div>
+          <label class="f">Topic</label>
+          <input type="text" id="t2" placeholder="e.g. GTA VI on the horizon">
+          <label class="f">Angle / notes (optional)</label>
+          <textarea id="t2n"></textarea>
+        </div>
+
+        <div class="topic">
+          <div class="t-head">Segment 3</div>
+          <label class="f">Topic</label>
+          <input type="text" id="t3" placeholder="e.g. Navigating the sea of negative sentiment">
+          <label class="f">Angle / notes (optional)</label>
+          <textarea id="t3n"></textarea>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-label">Extra Direction (optional)</div>
+        <textarea id="extra" style="min-height:84px" placeholder="Anything else — panel questions to weave in, breaking news callouts, recurring bits, things to avoid…"></textarea>
+      </div>
+    </div>
+
+    <!-- ── RIGHT: console ── -->
+    <div class="console">
+      <div class="card">
+        <div class="card-label">Engine</div>
+
+        <label class="f" for="model">Model (GitHub Models)</label>
+        <select id="model">
+          <option value="openai/gpt-4o">openai/gpt-4o</option>
+          <option value="openai/gpt-4o-mini">openai/gpt-4o-mini</option>
+          <option value="openai/gpt-4.1">openai/gpt-4.1</option>
+          <option value="meta/llama-3.3-70b-instruct">meta/llama-3.3-70b-instruct</option>
+          <option value="mistral-ai/mistral-large-2411">mistral-ai/mistral-large-2411</option>
+        </select>
+        <p class="hint">Free to use with a GitHub token, with per-day rate limits.</p>
+
+        <div id="tokenBlock">
+          <label class="f" for="token">GitHub token</label>
+          <input type="password" id="token" placeholder="ghp_… (kept in memory only)" autocomplete="off">
+          <p class="hint">Better: set the <b>GITHUB_TOKEN</b> environment variable before running <span style="font-family:var(--mono)">server.py</span> and this field disappears. Never share a token in chats or commits.</p>
+        </div>
+        <div class="tokenline" id="tokenGood" style="display:none">
+          <span class="tokenstate good">✓ Token loaded from environment</span>
+        </div>
+
+        <button class="startkey" id="go">
+          ▶ Start
+          <span class="press">Press start to generate</span>
+        </button>
+        <button class="packetkey" id="goPacket">🎬 Producer Packet (.pptx)</button>
+        <div class="status" id="status"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-label">Show Settings</div>
+        <label class="f" for="showname">Show name</label>
+        <input type="text" id="showname" value="Start Button">
+        <label class="f" for="tagline">Tagline</label>
+        <input type="text" id="tagline" value="A gaming talk show for the ones who were there first">
+      </div>
+    </div>
+  </div>
+
+  <!-- ── OUTPUT FLYOUT (slides in from the right) ── -->
+  <div class="flyout-backdrop" id="flyoutBackdrop"></div>
+  <aside class="flyout" id="output">
+    <div class="flyout-titlebar">
+      <div class="flyout-title">
+        <span class="flyout-dot"></span>
+        <span>Episode Preview</span>
+      </div>
+      <div class="flyout-tools">
+        <button id="flyoutExpand" class="flyout-iconbtn" title="Expand / collapse width">⤢</button>
+        <button id="flyoutClose" class="flyout-iconbtn" title="Close preview">✕</button>
+      </div>
+    </div>
+
+    <div class="flyout-body">
+      <div class="qotd" id="qotd">
+        <div class="qotd-head">
+          <div class="card-label" style="margin:0">⭐ Question of the Day</div>
+          <button id="qotdRegen" class="qotd-regen">↻ Regenerate</button>
+        </div>
+        <p class="hint" style="margin:0.5rem 0 0.8rem">Pick the icebreaker you want to open the show with — it'll swap into the rundown live.</p>
+        <div class="qotd-status status" id="qotdStatus"></div>
+        <div class="qotd-options" id="qotdOptions"></div>
+      </div>
+      <iframe class="preview" id="preview" title="Episode rundown preview"></iframe>
+    </div>
+
+    <div class="flyout-footer out-bar">
+      <button class="primary" id="download">⬇ Download (.html)</button>
+      <button id="opentab">New tab</button>
+      <button id="printbtn">Print / PDF</button>
+    </div>
+  </aside>
+
+  <button class="reopen-tab" id="reopenTab" title="Show episode preview">‹ Preview</button>
+
+  <footer class="app">Start Button · Weekly Discussion Show · Generated locally</footer>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PptxGenJS/3.12.0/pptxgen.bundle.js"></script>
+<script src="/templates/packet-template.js"></script>
+<script>
+(function () {
+  var generatedDoc = "";
+  var statusEl = document.getElementById("status");
+  var goBtn = document.getElementById("go");
+
+  // Default the date to today
+  document.getElementById("epdate").value = new Date().toISOString().slice(0, 10);
+
+  // Hide token field if the server already has one from the environment
+  fetch("/api/status").then(function (r) { return r.json(); }).then(function (s) {
+    if (s.token_in_env) {
+      document.getElementById("tokenBlock").style.display = "none";
+      document.getElementById("tokenGood").style.display = "flex";
+    }
+  }).catch(function () {});
+
+  function setStatus(msg, cls) {
+    statusEl.textContent = msg || "";
+    statusEl.className = "status" + (cls ? " " + cls : "");
+  }
+
+  function val(id) { return document.getElementById(id).value.trim(); }
+
+  // ── Flyout preview panel ──
+  var flyoutEl = document.getElementById("output");
+  var backdropEl = document.getElementById("flyoutBackdrop");
+  var reopenTab = document.getElementById("reopenTab");
+  var hasPreview = false;
+
+  function openFlyout() {
+    hasPreview = true;
+    flyoutEl.classList.add("show");
+    backdropEl.classList.add("show");
+    document.body.classList.add("flyout-open");
+    reopenTab.classList.remove("show");
+  }
+  function closeFlyout() {
+    flyoutEl.classList.remove("show");
+    backdropEl.classList.remove("show");
+    document.body.classList.remove("flyout-open");
+    if (hasPreview) reopenTab.classList.add("show");
+  }
+  document.getElementById("flyoutClose").addEventListener("click", closeFlyout);
+  backdropEl.addEventListener("click", closeFlyout);
+  reopenTab.addEventListener("click", openFlyout);
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape" && flyoutEl.classList.contains("show")) closeFlyout();
+  });
+  document.getElementById("flyoutExpand").addEventListener("click", function () {
+    flyoutEl.classList.toggle("wide");
+  });
+
+
+  // ── Research: fetch the host's source links so generation uses real facts ──
+  function extractUrls() {
+    var text = [val("t1n"), val("t2n"), val("t3n"), val("extra")].join("\n");
+    var found = text.match(/https?:\/\/[^\s"'<>)\]]+/g) || [];
+    var seen = {}, urls = [];
+    found.forEach(function (u) {
+      u = u.replace(/[.,;]+$/, "");
+      if (!seen[u]) { seen[u] = 1; urls.push(u); }
+    });
+    return urls.slice(0, 8);
+  }
+
+  function doResearch(onStatus) {
+    var urls = extractUrls();
+    if (!urls.length) return Promise.resolve("");
+    onStatus("Researching " + urls.length + " source link" + (urls.length > 1 ? "s" : "") + "…");
+    return fetch("/api/research", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ urls: urls })
+    })
+    .then(function (r) { return r.json(); })
+    .then(function (j) {
+      var pages = j.pages || [];
+      if (!pages.length) return "";
+      return "\n\nRESEARCH — full text fetched live from the host's source links. " +
+        "Treat these as factual ground truth; prefer these facts over memory; " +
+        "use real names, dates, scores and numbers from them:\n" +
+        pages.map(function (p) {
+          return "--- " + p.title + " (" + p.url + ") ---\n" + p.text;
+        }).join("\n\n");
+    })
+    .catch(function () { return ""; });
+  }
+
+  function buildBrief() {
+    return {
+      show: val("showname") || "Start Button",
+      tagline: val("tagline"),
+      theme: val("theme"),
+      date: val("epdate"),
+      tone: val("tone"),
+      icebreaker: val("icebreaker"),
+      topics: [
+        { topic: val("t1"), notes: val("t1n") },
+        { topic: val("t2"), notes: val("t2n") },
+        { topic: val("t3"), notes: val("t3n") }
+      ],
+      extra: val("extra")
+    };
+  }
+
+  function topicsText(brief) {
+    return [1, 2, 3].map(function (n) {
+      var t = brief.topics[n - 1];
+      return n + ". " + t.topic + (t.notes ? "\n   Notes: " + t.notes : "");
+    }).join("\n");
+  }
+
+  // ── Episode rundown prompt (matches the show's established format) ──
+  function buildEpisodePrompt(brief, research) {
+    var system = [
+      "You are the head writer for '" + brief.show + "', a weekly three-topic panel discussion",
+      "talk show about video games, hosted by lifelong gamers for an audience that has been",
+      "playing for decades. Write a complete episode rundown in the show's house format.",
+      "",
+      "Voice: conversational, warm, knowledgeable — written to be SPOKEN by a host. Specific",
+      "facts (dates, scores, studio names, numbers) woven naturally into the copy.",
+      "",
+      "Respond with ONLY one valid JSON object — no markdown fences — matching exactly:",
+      "{",
+      '  "themeTitle": "short punchy episode theme",',
+      '  "subtitle": "one evocative line that frames the episode",',
+      '  "opening": {',
+      '    "title": "Welcome to ' + brief.show + '",',
+      '    "celebration": {"icon":"one emoji","text":"this-week framing callout, 40-70 words, key facts bolded-worthy"} or null,',
+      '    "welcome": "host welcome monologue, 120-180 words, teases all three topics, sets the tone",',
+      '    "icebreaker": "one icebreaker question for panel and chat",',
+      '    "hostNote": "practical staging note: how to run the icebreaker",',
+      '    "questions": ["3 guiding questions for the opening discussion"],',
+      '    "starters": ["3 conversation starter lines, quotable as written"],',
+      '    "movers": ["2 transition lines into segment one"]',
+      "  },",
+      '  "segments": [  // EXACTLY 3, same order as the topics given',
+      "    {",
+      '      "title": "segment title — evocative, specific",',
+      '      "highlight": true/false,  // exactly ONE segment true: the biggest story',
+      '      "gameTags": [{"label":"Game Name — Out Now / DATE, platform","status":"out" or "soon"}],',
+      '      "celebration": {"icon":"emoji","text":"key-facts callout for this topic, 40-70 words"} or null,',
+      '      "paragraphs": ["2-3 paragraphs of host framing, each 100-170 words, rich with real facts"],',
+      '      "hostNote": "practical note: where to let it breathe, what to ask, generational angles",',
+      '      "panelQuestions": ["5-6 substantial questions for the panel — personal, debatable, specific"],',
+      '      "questions": ["2-3 broader guiding questions"] or null,',
+      '      "starters": ["3-4 quotable conversation starters"],',
+      '      "movers": ["2 transition lines to the next segment"]',
+      "    }",
+      "  ],",
+      '  "outro": {',
+      '    "title": "outro title",',
+      '    "copy": "70-110 word sign-off recapping the episode and inviting people back",',
+      '    "hostNote": "staging note: callback to icebreaker answers, how to land the ending",',
+      '    "closingRound": ["3-4 closing panel round prompts"],',
+      '    "signOffs": ["3 alternative sign-off lines the host can choose from"]',
+      "  }",
+      "}",
+      "",
+      "Weave the requested tone through everything. Use the angle notes and research heavily."
+    ].join("\n");
+
+    var user = [
+      "Write this week's episode rundown.",
+      "Theme: " + (brief.theme || "(choose a fitting theme)"),
+      "Air date: " + brief.date,
+      "Tone: " + brief.tone,
+      brief.icebreaker ? "Icebreaker (use this exact question): " + brief.icebreaker
+                       : "Icebreaker: write one that fits the theme.",
+      "",
+      "Topics:",
+      topicsText(brief),
+      brief.extra ? "\nExtra direction: " + brief.extra : "",
+      research
+    ].join("\n");
+
+    return [{ role: "system", content: system }, { role: "user", content: user }];
+  }
+
+  // ── Producer packet prompt (matches the show's packet deck) ──
+  function buildPacketPrompt(brief, research) {
+    var system = [
+      "You are the producer for '" + brief.show + "', a weekly three-topic gaming talk show.",
+      "Build the PRODUCER PACKET for this episode: the visual reference deck the production",
+      "team uses on set. Dense with real facts — dates, scores, studios, numbers.",
+      "",
+      "Respond with ONLY one valid JSON object — no markdown fences — matching exactly:",
+      "{",
+      '  "theme": "episode theme title",',
+      '  "tagline": "one italic line for the cover",',
+      '  "chips": [{"label":"GAME — OUT NOW or GAME — NOV 19","status":"out" or "soon"}],  // 4-6 cover chips',
+      '  "slides": [  // 4-6 visual slides covering all three segments; pick the best TYPE per slide:',
+      '    {"type":"timeline","eyebrow":"section label","title":"...","subtitle":"...",',
+      '     "rows":[{"when":"May 19","what":"Name","detail":"facts · separated · by dots"}]}, // 6-9 rows',
+      '    {"type":"compare","eyebrow":"...","title":"...","subtitle":"...",',
+      '     "cards":[{"name":"THING A","meta":"Studio · Date · Platforms","stat":"96","statLabel":"Metacritic — Universal Acclaim","facts":["5-7 short facts"]}], // exactly 2 cards',
+      '     "footer":"one shared takeaway line"},',
+      '    {"type":"stats","eyebrow":"...","title":"...","subtitle":"...",',
+      '     "meta1":"Studio","meta2":"Date","stat":"96","statLabel":"Metacritic","badges":["Game Pass Day One"],',
+      '     "facts":["6-7 KEY FACTS"],"talking":["5-6 TALKING POINTS for the panel"]},',
+      '    {"type":"versus","eyebrow":"...","title":"...","subtitle":"...",',
+      '     "leftLabel":"WHAT THE DISCOURSE SAYS","rightLabel":"WHAT THE GAMES SAY",',
+      '     "rows":[{"claim":"negative claim","reality":"factual rebuttal"}]}, // 5-7 rows',
+      '    {"type":"history","eyebrow":"...","title":"...","subtitle":"...",',
+      '     "rows":[{"year":"1997","name":"Title","maker":"Studio / Platform","verdict":"10/10 or Good/Mixed/Poor or a score","note":"one-line verdict"}]} // 6-8 rows',
+      "  ],",
+      '  "clips": [{"segment":1,"title":"Clip name — Trailer","where":"YouTube → Channel → search terms · year","note":"usage guidance, length, what to show"}],  // exactly 6, two per segment',
+      '  "closingStats": [{"value":"6","label":"Visuals"},...]  // exactly 4 closing stat callouts',
+      "}",
+      "",
+      "Only state facts supported by the research or the host's notes; if a number is",
+      "uncertain, omit it rather than invent it. Every segment gets at least one slide."
+    ].join("\n");
+
+    var user = [
+      "Build the producer packet for this week's episode.",
+      "Theme: " + (brief.theme || "(choose a fitting theme)"),
+      "Air date: " + brief.date,
+      "Tone: " + brief.tone,
+      "",
+      "Topics:",
+      topicsText(brief),
+      brief.extra ? "\nExtra direction: " + brief.extra : "",
+      research
+    ].join("\n");
+
+    return [{ role: "system", content: system }, { role: "user", content: user }];
+  }
+
+  // ── Rendering: fill the clean episode template ──
+  var templateCache = null;
+  function loadTemplate() {
+    if (templateCache) return Promise.resolve(templateCache);
+    return fetch("/templates/episode-template.html")
+      .then(function (r) {
+        if (!r.ok) throw new Error("episode-template.html not found");
+        return r.text();
+      })
+      .then(function (t) { templateCache = t; return t; });
+  }
+
+  function esc(s) {
+    return String(s == null ? "" : s)
+      .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  }
+
+  function lis(arr) {
+    return (arr || []).map(function (x) { return "      <li>" + esc(x) + "</li>"; }).join("\n");
+  }
+
+  function tk(type, label, items) {
+    if (!items || !items.length) return "";
+    return '    <div class="toolkit-block ' + type + '">\n' +
+           '      <div class="toolkit-label ' + type + '">' + esc(label) + "</div>\n" +
+           "      <ul>\n" + lis(items) + "\n      </ul>\n    </div>";
+  }
+
+  function celebrationHTML(c) {
+    if (!c || !c.text) return "";
+    return '  <div class="celebration">\n' +
+           '    <div class="celebration-icon">' + esc(c.icon || "🎉") + "</div>\n" +
+           '    <div class="celebration-text">' + esc(c.text) + "</div>\n  </div>";
+  }
+
+  function niceDate(iso) {
+    try {
+      var d = new Date(iso + "T12:00:00");
+      return d.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
+    } catch (e) { return iso; }
+  }
+
+  function titleHTML(show) {
+    var parts = (show || "Start Button").split(" ");
+    var last = parts.length > 1 ? parts.pop() : "";
+    return esc(parts.join(" ")) + (last ? " <span>" + esc(last) + "</span>" : "");
+  }
+
+  function renderEpisode(data, brief) {
+    var segWords = ["One", "Two", "Three"];
+    var out = [];
+
+    out.push('<header class="show-header">');
+    out.push('  <div class="show-eyebrow">Episode Rundown</div>');
+    out.push('  <h1 class="show-title">' + titleHTML(brief.show) + "</h1>");
+    out.push('  <div class="episode-theme">' + esc(data.themeTitle) + "</div>");
+    out.push('  <p class="show-subtitle">' + esc(data.subtitle || brief.tagline) + "</p>");
+    out.push('  <div class="show-date">' + esc(niceDate(brief.date)) + "</div>");
+    out.push("</header>\n");
+
+    var op = data.opening || {};
+    out.push('<div class="segment intro">');
+    out.push('  <div class="segment-label">Opening</div>');
+    out.push('  <h2 class="segment-title">' + esc(op.title || "Welcome to " + brief.show) + "</h2>");
+    out.push('  <div class="divider"></div>');
+    out.push(celebrationHTML(op.celebration));
+    out.push("  <p>" + esc(op.welcome) + "</p>");
+    out.push('  <div class="icebreaker">');
+    out.push('    <div class="icebreaker-icon">⭐</div>');
+    out.push("    <div>");
+    out.push('      <div class="icebreaker-label">Icebreaker Question of the Day</div>');
+    out.push('      <div class="icebreaker-q">' + esc(op.icebreaker) + "</div>");
+    out.push("    </div>\n  </div>");
+    if (op.hostNote) out.push('  <p class="host-note">💬 Host note: ' + esc(op.hostNote) + "</p>");
+    out.push('  <div class="host-toolkit">');
+    out.push(tk("questions", "Guiding Questions — Opening", op.questions));
+    out.push(tk("starters", "Conversation Starters", op.starters));
+    out.push(tk("movers", "To Move Things Along", op.movers));
+    out.push("  </div>\n</div>\n");
+
+    (data.segments || []).slice(0, 3).forEach(function (seg, i) {
+      out.push('<div class="segment' + (seg.highlight ? " gold" : "") + '">');
+      out.push('  <div class="seg-badge">' + (i + 1) + "</div>");
+      out.push('  <div class="segment-label">Segment ' + segWords[i] + "</div>");
+      out.push('  <h2 class="segment-title">' + esc(seg.title) + "</h2>");
+      out.push('  <div class="divider"></div>');
+      if (seg.gameTags && seg.gameTags.length) {
+        out.push('  <div class="game-tags">');
+        seg.gameTags.forEach(function (t) {
+          var cls = t.status === "soon" ? "game-tag soon" : "game-tag out";
+          out.push('    <span class="' + cls + '">' + esc(t.label) + "</span>");
+        });
+        out.push("  </div>");
+      }
+      out.push(celebrationHTML(seg.celebration));
+      (seg.paragraphs || []).forEach(function (p) { out.push("  <p>" + esc(p) + "</p>"); });
+      if (seg.hostNote) out.push('  <p class="host-note">💬 Host note: ' + esc(seg.hostNote) + "</p>");
+      if (seg.panelQuestions && seg.panelQuestions.length) {
+        out.push('  <div class="panel-block">');
+        out.push('    <div class="panel-block-label">★ Panel Questions — Segment ' + (i + 1) + "</div>");
+        out.push("    <ul>\n" + lis(seg.panelQuestions) + "\n    </ul>\n  </div>");
+      }
+      out.push('  <div class="host-toolkit">');
+      out.push(tk("questions", "Guiding Questions", seg.questions));
+      out.push(tk("starters", "Conversation Starters", seg.starters));
+      out.push(tk("movers", "To Move Things Along", seg.movers));
+      out.push("  </div>\n</div>\n");
+    });
+
+    var ot = data.outro || {};
+    out.push('<div class="segment outro">');
+    out.push('  <div class="segment-label">Outro</div>');
+    out.push('  <h2 class="segment-title">' + esc(ot.title || "See You Next Time") + "</h2>");
+    out.push('  <div class="divider"></div>');
+    if (ot.copy) out.push("  <p>" + esc(ot.copy) + "</p>");
+    if (ot.hostNote) out.push('  <p class="host-note">💬 Host note: ' + esc(ot.hostNote) + "</p>");
+    out.push('  <div class="host-toolkit">');
+    out.push(tk("panel", "★ Closing Panel Round", ot.closingRound));
+    out.push(tk("movers", "Sign-Off Options", ot.signOffs));
+    out.push("  </div>\n</div>\n");
+
+    out.push('<div class="show-footer">' + esc(brief.show) + " &nbsp;·&nbsp; " +
+             esc(data.themeTitle) + " &nbsp;·&nbsp; " + esc(niceDate(brief.date)) + "</div>");
+
+    return out.filter(Boolean).join("\n");
+  }
+
+  function buildRundownDoc(data, brief) {
+    return loadTemplate().then(function (tpl) {
+      return tpl
+        .replace("{{DOC_TITLE}}", esc(brief.show) + " — " + esc(data.themeTitle))
+        .replace("<!--CONTENT-->", renderEpisode(data, brief));
+    });
+  }
+
+  function parseModelJSON(text) {
+    var t = text.trim().replace(/^```(?:json)?/i, "").replace(/```$/, "").trim();
+    var first = t.indexOf("{"), last = t.lastIndexOf("}");
+    if (first > 0 || last < t.length - 1) t = t.slice(first, last + 1);
+    return JSON.parse(t);
+  }
+
+  // ── Topic Scout ──
+  var scoutBtn = document.getElementById("scoutGo");
+  var scoutStatus = document.getElementById("scoutStatus");
+  var scoutResults = document.getElementById("scoutResults");
+
+  function setScoutStatus(msg, cls) {
+    scoutStatus.textContent = msg || "";
+    scoutStatus.className = "status" + (cls ? " " + cls : "");
+  }
+
+  function placeSuggestion(sug, slot, btn, row) {
+    // Toggle off if this slot is already assigned to this suggestion
+    if (btn.classList.contains("placed")) {
+      btn.classList.remove("placed");
+      btn.textContent = "→ " + slot;
+      // Only clear the fields if they still contain this suggestion's content
+      var titleEl = document.getElementById("t" + slot);
+      var notesEl = document.getElementById("t" + slot + "n");
+      if (titleEl.value === sug.title) {
+        titleEl.value = "";
+        notesEl.value = "";
+      }
+      return;
+    }
+    // Assign — clear any other button on this row that claims this slot
+    row.querySelectorAll("button").forEach(function (b) {
+      if (b !== btn && b.classList.contains("placed")) {
+        b.classList.remove("placed");
+        b.textContent = "→ " + b.dataset.slot;
+      }
+    });
+    document.getElementById("t" + slot).value = sug.title;
+    document.getElementById("t" + slot + "n").value = sug.angle +
+      (sug.sourceLines ? "\nSources: " + sug.sourceLines : "");
+    btn.classList.add("placed");
+    btn.textContent = "✓ " + slot;
+  }
+
+  function renderSuggestions(suggestions, headlines) {
+    scoutResults.innerHTML = "";
+    suggestions.forEach(function (sug) {
+      var srcs = (sug.headline_ids || [])
+        .map(function (i) { return headlines[i]; })
+        .filter(Boolean);
+      sug.sourceLines = srcs.map(function (h) { return h.source + " — " + h.title; }).join("; ");
+
+      var card = document.createElement("div");
+      card.className = "suggestion";
+
+      var h3 = document.createElement("h3");
+      h3.textContent = sug.title;
+      card.appendChild(h3);
+
+      var angle = document.createElement("div");
+      angle.className = "angle";
+      angle.textContent = sug.angle;
+      card.appendChild(angle);
+
+      if (sug.why) {
+        var why = document.createElement("div");
+        why.className = "why";
+        why.textContent = sug.why;
+        card.appendChild(why);
+      }
+
+      if (srcs.length) {
+        var srcRow = document.createElement("div");
+        srcRow.className = "srcs";
+        srcs.slice(0, 4).forEach(function (h) {
+          var a = document.createElement("a");
+          a.href = h.link || "#";
+          a.target = "_blank";
+          a.rel = "noopener";
+          a.textContent = "↗ " + h.source;
+          a.title = h.title;
+          srcRow.appendChild(a);
+        });
+        card.appendChild(srcRow);
+      }
+
+      var actions = document.createElement("div");
+      actions.className = "sug-actions";
+      var lbl = document.createElement("span");
+      lbl.className = "to-label";
+      lbl.textContent = "Use as segment";
+      actions.appendChild(lbl);
+      [1, 2, 3].forEach(function (slot) {
+        var b = document.createElement("button");
+        b.textContent = "→ " + slot;
+        b.dataset.slot = slot;
+        b.addEventListener("click", function () { placeSuggestion(sug, slot, b, actions); });
+        actions.appendChild(b);
+      });
+      card.appendChild(actions);
+
+      scoutResults.appendChild(card);
+    });
+    scoutResults.classList.add("show");
+  }
+
+  function runScout() {
+    scoutBtn.disabled = true;
+    scoutResults.classList.remove("show");
+    setScoutStatus("Scanning the week's gaming news…");
+
+    var headers = { "Content-Type": "application/json" };
+    var t = val("token");
+    if (t) headers["X-GitHub-Token"] = t;
+
+    fetch("/api/suggest", {
+      method: "POST",
+      headers: headers,
+      body: JSON.stringify({
+        model: val("model"),
+        brief: val("scoutBrief")
+      })
+    })
+    .then(function (r) { return r.json().then(function (j) { return { ok: r.ok, j: j }; }); })
+    .then(function (res) {
+      if (!res.ok) throw new Error(res.j.error || "Scout failed");
+      var parsed = parseModelJSON(res.j.content);
+      var suggestions = parsed.suggestions || [];
+      if (!suggestions.length) throw new Error("No suggestions came back — try a broader direction.");
+      renderSuggestions(suggestions, res.j.headlines || []);
+      var n = (res.j.headlines || []).length;
+      var fe = res.j.feed_errors || [];
+      setScoutStatus("Scanned " + n + " headlines ✓" +
+        (fe.length ? "  (" + fe.length + " feed" + (fe.length > 1 ? "s" : "") + " unreachable)" : ""), "ok");
+    })
+    .catch(function (e) { setScoutStatus("Error: " + e.message, "err"); })
+    .finally(function () { scoutBtn.disabled = false; });
+  }
+
+  scoutBtn.addEventListener("click", runScout);
+  document.getElementById("scoutBrief").addEventListener("keydown", function (e) {
+    if (e.key === "Enter") runScout();
+  });
+
+  function callModel(messages, maxTokens) {
+    var headers = { "Content-Type": "application/json" };
+    var t = val("token");
+    if (t) headers["X-GitHub-Token"] = t;
+    return fetch("/api/generate", {
+      method: "POST",
+      headers: headers,
+      body: JSON.stringify({
+        model: val("model"),
+        json_mode: true,
+        max_tokens: maxTokens || 4096,
+        messages: messages
+      })
+    })
+    .then(function (r) { return r.json().then(function (j) { return { ok: r.ok, j: j }; }); })
+    .then(function (res) {
+      if (!res.ok) throw new Error(res.j.error || "Request failed");
+      return parseModelJSON(res.j.content);
+    });
+  }
+
+  goBtn.addEventListener("click", function () {
+    var missing = ["t1", "t2", "t3"].filter(function (id) { return !val(id); });
+    if (missing.length) { setStatus("Fill in all three topics first.", "err"); return; }
+
+    var brief = buildBrief();
+    goBtn.disabled = true;
+    chosenQotd = null;
+    document.getElementById("qotd").classList.remove("show");
+    reopenTab.classList.remove("show");
+
+    doResearch(function (m) { setStatus(m); })
+      .then(function (research) {
+        setStatus((research ? "Sources read ✓ — w" : "W") + "riting this week's episode…");
+        return callModel(buildEpisodePrompt(brief, research), 4096);
+      })
+      .then(function (data) {
+        lastEpisode = data;
+        lastBrief = brief;
+        return buildRundownDoc(data, brief);
+      })
+      .then(function (doc) {
+        generatedDoc = doc;
+        document.getElementById("preview").srcdoc = generatedDoc;
+        openFlyout();
+        setStatus("Episode ready ✓ — preview opened.", "ok");
+        loadQotd();
+      })
+      .catch(function (e) { setStatus("Error: " + e.message, "err"); })
+      .finally(function () { goBtn.disabled = false; });
+  });
+
+  // ── Question of the Day selector ──
+  var lastEpisode = null, lastBrief = null, chosenQotd = null;
+  var qotdPanel = document.getElementById("qotd");
+  var qotdOptions = document.getElementById("qotdOptions");
+  var qotdStatus = document.getElementById("qotdStatus");
+  var qotdRegen = document.getElementById("qotdRegen");
+
+  function setQotdStatus(msg, cls) {
+    qotdStatus.textContent = msg || "";
+    qotdStatus.className = "qotd-status status" + (cls ? " " + cls : "");
+  }
+
+  function buildQotdPrompt(brief, avoid) {
+    var system = "You write icebreaker / 'question of the day' prompts for a weekly gaming " +
+      "panel talk show. The question opens the episode — it should be warm, easy to answer " +
+      "out loud, spark good panel and chat discussion, and connect to this week's theme and " +
+      "topics. Mix personal-nostalgia and opinion angles. Respond with ONLY valid JSON: " +
+      '{"questions": ["q1", "q2", "q3"]}  — exactly 3, each one sentence, no numbering.';
+    var user = [
+      "Theme: " + (brief.theme || "(general gaming)"),
+      "Tone: " + brief.tone,
+      "Topics: " + brief.topics.map(function (t) { return t.topic; }).filter(Boolean).join(" | "),
+      avoid && avoid.length ? "\nDo NOT repeat or closely echo these already-seen questions:\n- " + avoid.join("\n- ") : "",
+      "\nGive 3 fresh, distinct options."
+    ].join("\n");
+    return [{ role: "system", content: system }, { role: "user", content: user }];
+  }
+
+  function renderQotdOptions(questions) {
+    qotdOptions.innerHTML = "";
+    questions.forEach(function (q, i) {
+      var btn = document.createElement("button");
+      btn.className = "qotd-opt" + (q === chosenQotd ? " chosen" : "");
+      var tag = document.createElement("span");
+      tag.className = "pick-tag";
+      tag.textContent = (q === chosenQotd ? "✓ Selected — option " : "Option ") + (i + 1);
+      var txt = document.createElement("span");
+      txt.textContent = q;
+      btn.appendChild(tag);
+      btn.appendChild(txt);
+      btn.addEventListener("click", function () { chooseQotd(q); });
+      qotdOptions.appendChild(btn);
+    });
+  }
+
+  function chooseQotd(q) {
+    if (!lastEpisode) return;
+    chosenQotd = q;
+    lastEpisode.opening = lastEpisode.opening || {};
+    lastEpisode.opening.icebreaker = q;
+    document.getElementById("icebreaker").value = q;  // keep the form field in sync
+    // mark chosen + re-render the rundown live
+    Array.prototype.forEach.call(qotdOptions.children, function (btn) {
+      var isChosen = btn.lastChild.textContent === q;
+      btn.classList.toggle("chosen", isChosen);
+      btn.firstChild.textContent = (isChosen ? "✓ Selected — option " : "Option ") +
+        (Array.prototype.indexOf.call(qotdOptions.children, btn) + 1);
+    });
+    buildRundownDoc(lastEpisode, lastBrief).then(function (doc) {
+      generatedDoc = doc;
+      document.getElementById("preview").srcdoc = generatedDoc;
+      setQotdStatus("Icebreaker updated in the rundown ✓", "ok");
+    });
+  }
+
+  var seenQuestions = [];
+  function loadQotd(regen) {
+    if (!lastBrief) return;
+    qotdRegen.disabled = true;
+    qotdPanel.classList.add("show");
+    setQotdStatus(regen ? "Thinking up fresh questions…" : "Generating question options…");
+    // Seed the first option with whatever the episode already produced
+    var seed = (!regen && lastEpisode && lastEpisode.opening && lastEpisode.opening.icebreaker)
+      ? lastEpisode.opening.icebreaker : null;
+    callModel(buildQotdPrompt(lastBrief, seenQuestions), 800)
+      .then(function (data) {
+        var qs = (data.questions || []).slice(0, 3);
+        if (seed && qs.indexOf(seed) === -1) { qs.unshift(seed); qs = qs.slice(0, 3); }
+        if (!qs.length) throw new Error("No questions came back");
+        seenQuestions = seenQuestions.concat(qs).slice(-15);
+        renderQotdOptions(qs);
+        setQotdStatus("");
+      })
+      .catch(function (e) { setQotdStatus("Error: " + e.message, "err"); })
+      .finally(function () { qotdRegen.disabled = false; });
+  }
+
+  qotdRegen.addEventListener("click", function () { loadQotd(true); });
+
+  // ── Producer Packet (.pptx) ──
+  var packetBtn = document.getElementById("goPacket");
+  packetBtn.addEventListener("click", function () {
+    var missing = ["t1", "t2", "t3"].filter(function (id) { return !val(id); });
+    if (missing.length) { setStatus("Fill in all three topics first.", "err"); return; }
+    if (typeof PptxGenJS === "undefined" || typeof PacketTemplate === "undefined") {
+      setStatus("Packet library didn't load — check your internet connection and reload.", "err");
+      return;
+    }
+
+    var brief = buildBrief();
+    packetBtn.disabled = true;
+
+    doResearch(function (m) { setStatus(m); })
+      .then(function (research) {
+        setStatus((research ? "Sources read ✓ — b" : "B") + "uilding the producer packet…");
+        return callModel(buildPacketPrompt(brief, research), 4096);
+      })
+      .then(function (data) {
+        setStatus("Laying out slides…");
+        var meta = {
+          theme: data.theme || brief.theme || "This Week's Episode",
+          dateNice: niceDate(brief.date)
+        };
+        var pptx = new PptxGenJS();
+        PacketTemplate.build(pptx, data, meta);
+        return pptx.writeFile({
+          fileName: "start-button-producer-packet-" + (brief.date || "episode") + ".pptx"
+        });
+      })
+      .then(function () { setStatus("Producer packet downloaded ✓", "ok"); })
+      .catch(function (e) { setStatus("Error: " + e.message, "err"); })
+      .finally(function () { packetBtn.disabled = false; });
+  });
+
+  document.getElementById("download").addEventListener("click", function () {
+    if (!generatedDoc) return;
+    var blob = new Blob([generatedDoc], { type: "text/html" });
+    var a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "start-button-rundown-" + (val("epdate") || "episode") + ".html";
+    a.click();
+    URL.revokeObjectURL(a.href);
+  });
+
+  document.getElementById("opentab").addEventListener("click", function () {
+    if (!generatedDoc) return;
+    var w = window.open("about:blank");
+    w.document.write(generatedDoc);
+    w.document.close();
+  });
+
+  document.getElementById("printbtn").addEventListener("click", function () {
+    var f = document.getElementById("preview");
+    if (f && f.contentWindow) f.contentWindow.print();
+  });
+})();
+</script>
+</body>
+</html>

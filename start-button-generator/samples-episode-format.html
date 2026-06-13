@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Start Button — This Is Our Year</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet"/>
+<style>
+  /* ── Split-complementary dark palette from #505ED7 ──────────────────
+     Base  → blue-indigo  #505ED7  HSL(234°,63%,58%)
+     Split1 → warm orange  #D58048  HSL( 24°,63%,56%)  accent / gold
+     Split2 → yel-green   #A6D959  HSL( 84°,63%,60%)  positive / ok
+  ─────────────────────────────────────────────────────────────────── */
+  :root {
+    --bg:         #0E101B;
+    --surface:    #191B29;
+    --surface2:   #1F2236;
+    --border:     #282A3E;
+    --border2:    #323556;
+    --ink:        #E2E4F3;
+    --ink2:       #A8ABCA;
+    --ink3:       #7E83A9;
+    --blue:       #6E79DE;
+    --blue-dim:   #3D4699;
+    --gold:       #D58048;
+    --gold-light: #E7B797;
+    --gold-dim:   rgba(213,128,72,0.18);
+    --green:      #A6D959;
+    --green-dim:  rgba(166,217,89,0.15);
+    --shadow:     rgba(0,0,0,0.45);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  /* Force backgrounds to print — the critical fix for PDF export */
+  html {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    color-adjust: exact !important;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Lora', Georgia, serif;
+    min-height: 100vh;
+    padding: 2rem 1rem 4rem;
+  }
+
+  .page { max-width: 760px; margin: 0 auto; }
+
+  /* ── HEADER ── */
+  .show-header {
+    text-align: center;
+    padding: 2.5rem 1.5rem 2rem;
+    border-bottom: 1px solid var(--border2);
+    margin-bottom: 2.5rem;
+  }
+  .show-eyebrow {
+    font-size: 0.75rem; letter-spacing: 0.3em; text-transform: uppercase;
+    color: var(--blue); margin-bottom: 0.6rem; font-weight: 600;
+  }
+  .show-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2.4rem, 7vw, 3.8rem);
+    font-weight: 900; line-height: 1; color: var(--ink); margin-bottom: 0.4rem;
+  }
+  .show-title span { color: var(--blue); }
+  .episode-theme {
+    display: inline-block; font-family: 'Lora', serif;
+    font-size: 0.78rem; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--bg); background: var(--gold); border-radius: 2px;
+    padding: 0.25rem 0.9rem; margin-top: 0.8rem;
+  }
+  .show-subtitle { font-style: italic; font-size: 1rem; color: var(--gold-light); margin-top: 0.65rem; }
+  .show-date {
+    font-size: 0.72rem; letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--ink3); margin-top: 0.75rem;
+  }
+
+  /* ── SEGMENTS ── */
+  .segment {
+    background: var(--surface);
+    border-radius: 6px;
+    padding: 1.8rem 2rem;
+    margin-bottom: 1.6rem;
+    border-left: 4px solid var(--blue);
+    box-shadow: 2px 4px 18px var(--shadow);
+    position: relative;
+  }
+  .segment.intro { border-left-color: var(--blue); }
+  .segment.outro { border-left-color: var(--blue-dim); }
+  .segment.gold  { border-left-color: var(--gold); }
+
+  .segment-label {
+    font-size: 0.65rem; letter-spacing: 0.32em; text-transform: uppercase;
+    color: var(--blue); font-weight: 700; margin-bottom: 0.4rem;
+  }
+  .segment.outro .segment-label { color: var(--ink3); }
+  .segment.gold  .segment-label { color: var(--gold); }
+
+  .segment-title {
+    font-family: 'Playfair Display', serif; font-size: 1.52rem;
+    font-weight: 700; color: var(--ink); margin-bottom: 1rem; line-height: 1.22;
+  }
+
+  .divider { width: 36px; height: 2px; background: var(--blue); margin-bottom: 1rem; border-radius: 2px; }
+  .segment.outro .divider { background: var(--blue-dim); }
+  .segment.gold  .divider { background: var(--gold); }
+
+  .segment p { font-size: 0.96rem; line-height: 1.8; color: var(--ink2); }
+  .segment p + p { margin-top: 0.85rem; }
+
+  .seg-badge {
+    position: absolute; top: 1.4rem; right: 1.6rem;
+    font-family: 'Playfair Display', serif; font-size: 2.6rem;
+    font-weight: 900; color: var(--blue); opacity: 0.12; line-height: 1;
+    pointer-events: none;
+  }
+  .segment.gold .seg-badge { color: var(--gold); }
+
+  /* ── ICEBREAKER ── */
+  .icebreaker {
+    background: rgba(110,121,222,0.1);
+    border: 1px solid var(--border2);
+    border-left: 3px solid var(--blue);
+    border-radius: 4px; padding: 1.1rem 1.4rem;
+    margin-top: 1.2rem; display: flex; gap: 1rem; align-items: flex-start;
+  }
+  .icebreaker-icon { font-size: 1.7rem; line-height: 1; flex-shrink: 0; margin-top: 2px; }
+  .icebreaker-label {
+    font-size: 0.63rem; letter-spacing: 0.26em; text-transform: uppercase;
+    color: var(--blue); font-weight: 700; margin-bottom: 0.35rem;
+  }
+  .icebreaker-q {
+    font-family: 'Playfair Display', serif; font-size: 1.04rem;
+    font-weight: 700; color: var(--ink); line-height: 1.4;
+  }
+
+  /* ── HOST NOTE ── */
+  .host-note {
+    font-style: italic; font-size: 0.84rem; color: var(--gold-light);
+    border-top: 1px dashed var(--border2);
+    margin-top: 1.1rem; padding-top: 0.85rem;
+  }
+
+  /* ── TOOLKIT ── */
+  .host-toolkit { margin-top: 1.4rem; display: flex; flex-direction: column; gap: 0.85rem; }
+  .toolkit-block {
+    background: var(--surface2);
+    border-radius: 4px; padding: 1rem 1.2rem;
+    border: 1px solid var(--border);
+  }
+  .toolkit-block.questions { border-top: 2px solid var(--blue); }
+  .toolkit-block.starters  { border-top: 2px solid var(--blue-dim); }
+  .toolkit-block.movers    { border-top: 2px solid var(--border2); }
+  .toolkit-block.panel     { border-top: 2px solid var(--gold); background: var(--gold-dim); }
+
+  .toolkit-label { font-size: 0.61rem; letter-spacing: 0.28em; text-transform: uppercase; font-weight: 700; margin-bottom: 0.6rem; }
+  .toolkit-label.questions { color: var(--blue); }
+  .toolkit-label.starters  { color: #8E9BE8; }
+  .toolkit-label.movers    { color: var(--ink3); }
+  .toolkit-label.panel     { color: var(--gold); }
+
+  .toolkit-block ul { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 0.45rem; }
+  .toolkit-block ul li { font-size: 0.87rem; line-height: 1.6; color: var(--ink2); padding-left: 1.25rem; position: relative; }
+  .toolkit-block ul li::before { position: absolute; left: 0; top: 0; font-size: 0.76rem; font-weight: 700; }
+  .toolkit-block.questions li::before { content: "?";  color: var(--blue); }
+  .toolkit-block.starters  li::before { content: "→"; color: #8E9BE8; }
+  .toolkit-block.movers    li::before { content: "↪"; color: var(--ink3); }
+  .toolkit-block.panel     li::before { content: "★"; color: var(--gold); }
+
+  /* ── GAME TAGS ── */
+  .game-tags { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-bottom: 1rem; }
+  .game-tag {
+    display: inline-block; font-size: 0.63rem; font-weight: 700;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    padding: 0.22rem 0.65rem; border-radius: 3px;
+    background: rgba(110,121,222,0.12); color: var(--ink2);
+    border: 1px solid var(--border2);
+  }
+  .game-tag.out  { background: var(--green-dim); color: var(--green); border-color: rgba(166,217,89,0.35); }
+  .game-tag.soon { background: var(--gold-dim);  color: var(--gold);  border-color: rgba(213,128,72,0.4); }
+
+  /* ── CELEBRATION CALLOUT ── */
+  .celebration {
+    background: linear-gradient(135deg, rgba(213,128,72,0.1) 0%, rgba(110,121,222,0.08) 100%);
+    border: 1px solid rgba(213,128,72,0.3);
+    border-radius: 4px; padding: 0.85rem 1.1rem;
+    margin-bottom: 1rem; display: flex; align-items: flex-start; gap: 0.7rem;
+  }
+  .celebration-icon { font-size: 1.35rem; flex-shrink: 0; line-height: 1; margin-top: 0.1rem; }
+  .celebration-text { font-size: 0.87rem; color: var(--ink2); line-height: 1.56; }
+  .celebration-text strong { color: var(--gold-light); }
+
+  /* ── PANEL QUESTION BLOCK ── */
+  .panel-block {
+    background: var(--gold-dim); border: 1px solid rgba(213,128,72,0.28);
+    border-radius: 4px; padding: 1rem 1.2rem; margin-top: 1rem;
+  }
+  .panel-block-label { font-size: 0.61rem; letter-spacing: 0.28em; text-transform: uppercase; font-weight: 700; color: var(--gold); margin-bottom: 0.6rem; }
+  .panel-block ul { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 0.5rem; }
+  .panel-block ul li { font-size: 0.87rem; line-height: 1.6; color: var(--ink2); padding-left: 1.3rem; position: relative; }
+  .panel-block ul li::before { content: "★"; position: absolute; left: 0; top: 0; font-size: 0.68rem; color: var(--gold); }
+
+  /* ── FOOTER ── */
+  .show-footer {
+    text-align: center; margin-top: 3rem; padding-top: 1.5rem;
+    border-top: 1px solid var(--border);
+    font-size: 0.72rem; letter-spacing: 0.16em; text-transform: uppercase;
+    color: var(--ink3);
+  }
+
+  /* ── PRINT / PDF ── */
+  @media print {
+    body { background: var(--bg) !important; padding: 0; }
+    .page { max-width: none; }
+    .segment { break-inside: avoid-page; box-shadow: none; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+<header class="show-header">
+  <div class="show-eyebrow">Episode Rundown</div>
+  <h1 class="show-title">Start <span>Button</span></h1>
+  <div class="episode-theme">This Is Our Year</div>
+  <p class="show-subtitle">There has never been a better time to love games</p>
+  <div class="show-date">May 30, 2026</div>
+</header>
+
+<div class="segment intro">
+  <div class="segment-label">Opening</div>
+  <h2 class="segment-title">Welcome to Start Button</h2>
+  <div class="divider"></div>
+  <div class="celebration">
+    <div class="celebration-icon">🎉</div>
+    <div class="celebration-text">This week only: 007 First Light launched Tuesday (Metacritic 96), LEGO Batman: Legacy dropped Thursday, and Forza Horizon 6 is still riding high. Three 96-rated games in one week.</div>
+  </div>
+  <p>Hey everyone — welcome back to Start Button. Today we are choosing to celebrate. Because if you look at what has actually happened in 2026 so far, and what is still coming before the year is out, this might genuinely be one of the best years for gaming in a long time.</p>
+  <div class="icebreaker">
+    <div class="icebreaker-icon">⭐</div>
+    <div>
+      <div class="icebreaker-label">Icebreaker Question of the Day</div>
+      <div class="icebreaker-q">What has been your personal game of the year so far in 2026 — and did it surprise you, or did you see it coming?</div>
+    </div>
+  </div>
+  <p class="host-note">💬 Host note: Read this one round the panel first before opening it to the chat.</p>
+  <div class="host-toolkit">
+    <div class="toolkit-block questions">
+      <div class="toolkit-label questions">Guiding Questions — Opening</div>
+      <ul>
+      <li>When did you last feel genuinely excited about a slate of upcoming games?</li>
+      <li>Is it harder to feel that excitement now as adults, or actually easier because we know what's good?</li>
+      <li>For the chat: do you stay up to date on gaming news, or prefer to go in cold?</li>
+      </ul>
+    </div>
+    <div class="toolkit-block starters">
+      <div class="toolkit-label starters">Conversation Starters</div>
+      <ul>
+      <li>We are recording this on a week where three significant games either just dropped or just celebrated their first week.</li>
+      <li>Acknowledge the negative noise directly and briefly — yes, there have been layoffs. But today we look at the other side of the ledger.</li>
+      <li>Frame the episode as an antidote — not denial, but balance.</li>
+      </ul>
+    </div>
+    <div class="toolkit-block movers">
+      <div class="toolkit-label movers">To Move Things Along</div>
+      <ul>
+      <li>Alright — panel answers in, chat is firing. Let's get into the games.</li>
+      <li>This is a good day to be a gamer. Let's go.</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<div class="segment gold">
+  <div class="seg-badge">1</div>
+  <div class="segment-label">Segment One</div>
+  <h2 class="segment-title">007 &amp; Gotham — When Licensed Games Actually Work</h2>
+  <div class="divider"></div>
+  <div class="game-tags">
+    <span class="game-tag out">007 First Light — Out Now</span>
+    <span class="game-tag out">LEGO Batman: Legacy — Out Now</span>
+  </div>
+  <div class="celebration">
+    <div class="celebration-icon">🔫</div>
+    <div class="celebration-text">007 First Light launched May 27 from IO Interactive. Metacritic score: 96 — Universal Acclaim on every platform. A Bond game hasn't scored like this since GoldenEye.</div>
+  </div>
+  <p>Let's start with something that could have gone very wrong and instead went very right. 007 First Light is out now — IO Interactive, the studio behind the Hitman trilogy, has made a James Bond origin story that critics are calling one of the best games of the year. We're talking a Metacritic score of 96.</p>
+  <p>And then there's LEGO Batman: Legacy, which also dropped this week. Open-world Gotham, 100 Batsuits, twelve Batmobiles. Steam user reviews are sitting at 96% positive.</p>
+  <p class="host-note">💬 Host note: The Bond conversation is great for generational comparison — GoldenEye N64, the Brosnan-era games, the Daniel Craig era.</p>
+  <div class="panel-block">
+    <div class="panel-block-label">★ Panel Questions — Segment 1</div>
+    <ul>
+      <li>What did your relationship with James Bond games look like growing up?</li>
+      <li>IO Interactive built their reputation on patience. Does that philosophy make sense for Bond?</li>
+      <li>LEGO Batman is the fourth in the series. Who are you playing it with?</li>
+      <li>Both are licensed games that had every reason to be mediocre. What made the difference?</li>
+    </ul>
+  </div>
+  <div class="host-toolkit">
+    <div class="toolkit-block starters">
+      <div class="toolkit-label starters">Conversation Starters</div>
+      <ul>
+      <li>Licensed games failing is the rule. Licensed games succeeding is the exception. This week we got two exceptions in the same week.</li>
+      <li>Both of these games are single-player, story-driven experiences. No battle passes. Just a beginning, a middle, and an end.</li>
+      </ul>
+    </div>
+    <div class="toolkit-block movers">
+      <div class="toolkit-label movers">To Move Things Along</div>
+      <ul>
+      <li>Two for two this week. And we haven't even gotten to the racing game that's been sitting at the top of the charts...</li>
+      <li>Licensed games, check. Now let's talk about one of the best-reviewed games of the entire year.</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<div class="segment">
+  <div class="seg-badge">2</div>
+  <div class="segment-label">Segment Two</div>
+  <h2 class="segment-title">Forza in Japan — And the Year That's Been Better Than We Noticed</h2>
+  <div class="divider"></div>
+  <div class="game-tags">
+    <span class="game-tag out">Forza Horizon 6 — Out Now</span>
+    <span class="game-tag out">Pragmata — Out Now</span>
+  </div>
+  <p>Forza Horizon 6 has been out for ten days now and it hasn't left the top of the charts. Japan — the most requested setting in franchise history — delivered. Tokyo is five times larger than any previous urban area in the series.</p>
+  <p class="host-note">💬 Host note: This is the core message of the episode — say it clearly and let the panel rally around it.</p>
+  <div class="panel-block">
+    <div class="panel-block-label">★ Panel Questions — Segment 2</div>
+    <ul>
+      <li>The Horizon series has always been about joy — just driving for the sake of it. Does Japan amplify that or change it?</li>
+      <li>Game Pass means it's free for subscribers. Does that affect how you perceive its quality?</li>
+      <li>Racing games get dismissed as lesser. Does a Metacritic 96 change that conversation?</li>
+    </ul>
+  </div>
+  <div class="host-toolkit">
+    <div class="toolkit-block questions">
+      <div class="toolkit-label questions">Guiding Questions</div>
+      <ul>
+      <li>Where does Forza Horizon 6 sit in the franchise ranking for you?</li>
+      <li>What does it mean for a game to be genuinely joyful rather than just fun?</li>
+      </ul>
+    </div>
+    <div class="toolkit-block starters">
+      <div class="toolkit-label starters">Conversation Starters</div>
+      <ul>
+      <li>Racing games sometimes get dismissed. Forza Horizon 6 is a good week to have that argument.</li>
+      <li>There is something about driving through a perfect recreation of Japan that lands differently if you grew up on Initial D.</li>
+      </ul>
+    </div>
+    <div class="toolkit-block movers">
+      <div class="toolkit-label movers">To Move Things Along</div>
+      <ul>
+      <li>We have talked about what's out. Now let's talk about what's coming — and it is a lot.</li>
+      <li>Two months. Two of the biggest games in years. Let's get into it.</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<div class="segment">
+  <div class="seg-badge">3</div>
+  <div class="segment-label">Segment Three</div>
+  <h2 class="segment-title">What's Coming — Wolverine, GTA VI, and the Greatest Six Months in Recent Memory</h2>
+  <div class="divider"></div>
+  <div class="game-tags">
+    <span class="game-tag soon">Marvel's Wolverine — Sept 15</span>
+    <span class="game-tag soon">GTA VI — Nov 19</span>
+  </div>
+  <div class="celebration">
+    <div class="celebration-icon">📅</div>
+    <div class="celebration-text">Between now and the end of 2026: Marvel's Wolverine (Sept 15, PS5), GTA VI (Nov 19, PS5/Xbox), plus Gears of War: E-Day, Fable, and a new Halo still pencilled in for Xbox. This is not a normal second half of a year.</div>
+  </div>
+  <p>Marvel's Wolverine is five years in development, announced in 2021. Dark, visceral, brutal — deliberately unlike Spider-Man. Original story set across Tokyo, Canada, and Madripoor. This is the first entry in a planned X-Men trilogy.</p>
+  <p>And then there's GTA VI. The first Grand Theft Auto in thirteen years. Set in Leonida — modern-day Vice City. For elder gamers, returning to Vice City in 2026 is genuinely emotional. GTA Vice City came out in 2002. Lead with that on the panel.</p>
+  <p class="host-note">💬 Host note: Let this one breathe. Give the panel time to actually talk about what GTA VI and Wolverine mean to them personally — not just as consumers, but as people who've been gaming for decades.</p>
+  <div class="panel-block">
+    <div class="panel-block-label">★ Panel Questions — Segment 3</div>
+    <ul>
+      <li>Wolverine has been in development since 2021. What are you most nervous about, and what are you most excited about?</li>
+      <li>The X-Men trilogy model mirrors what Insomniac did with Spider-Man. Does that give you confidence or concern?</li>
+      <li>GTA Vice City came out in 2002. What does it mean to return to that world as an adult in 2026?</li>
+      <li>Analyst projections have GTA VI at a billion dollars in the first week. Does scale like that change how you approach a game?</li>
+    </ul>
+  </div>
+  <div class="host-toolkit">
+    <div class="toolkit-block starters">
+      <div class="toolkit-label starters">Conversation Starters</div>
+      <ul>
+      <li>Wolverine is not Spider-Man. Insomniac have been very deliberate about saying that. What does a dark Wolverine game actually look like in 2026?</li>
+      <li>The last GTA was 2013. A lot has happened in thirteen years — in gaming, in the world, in all of our lives. This game is going to land differently for people our age.</li>
+      </ul>
+    </div>
+    <div class="toolkit-block movers">
+      <div class="toolkit-label movers">To Move Things Along</div>
+      <ul>
+      <li>That is the year. That is what we've got. Let's bring it home.</li>
+      <li>What a time to be a gamer. Seriously.</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<div class="segment outro">
+  <div class="segment-label">Outro</div>
+  <h2 class="segment-title">See You Next Time</h2>
+  <div class="divider"></div>
+  <p>That's the show for this week. 007 First Light, LEGO Batman, Forza in Japan, and two of the most anticipated games in years still to come. This is our year. We'll be back next week — same time, same place. Until then, go play something brilliant. There is no shortage of options.</p>
+  <p class="host-note">💬 Host note: Go back to the icebreaker answers from the top — remind everyone what they said, and ask if the conversation changed anything. End on a specific game recommendation from each panellist.</p>
+  <div class="host-toolkit">
+    <div class="toolkit-block panel">
+      <div class="toolkit-label panel">★ Closing Panel Round</div>
+      <ul>
+      <li>Go back to your icebreaker answer — has anything you heard today changed it?</li>
+      <li>What are you playing tonight, specifically?</li>
+      <li>One game you'd tell someone who hasn't touched a controller in years to start with right now?</li>
+      </ul>
+    </div>
+    <div class="toolkit-block movers">
+      <div class="toolkit-label movers">Sign-Off Options</div>
+      <ul>
+      <li>"Until next time — stay curious, stay hopeful, and go play something brilliant. There's no shortage of options."</li>
+      <li>"Same time next week. The start button's always here when you need it."</li>
+      <li>"Go play something. And this time — let yourself enjoy it."</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<div class="show-footer">Start Button &nbsp;·&nbsp; This Is Our Year &nbsp;·&nbsp; May 30, 2026</div>
+</div>
+</body>
+</html>
