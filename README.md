@@ -22,6 +22,22 @@
 
 ---
 
+## Screenshots
+
+**The producer console** — fill in your episode theme, three topics, and optional source links, then hit Start.
+
+![Producer console — empty state](start-button-generator/screenshots/01-console-empty.png)
+
+**A filled-in episode** ready to generate.
+
+![Producer console — filled in](start-button-generator/screenshots/02-console-filled.png)
+
+**The generated episode rundown** — opening monologue, icebreaker, three segments with host framing and panel questions, plus an outro.
+
+![Generated episode rundown](start-button-generator/screenshots/03-episode-rundown.png)
+
+---
+
 ## What It Does
 
 Start Button is a local web app that runs entirely on your computer. You fill in your episode's theme, tone, and three topics. The app:
